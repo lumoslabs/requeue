@@ -1,6 +1,6 @@
 # Requeue
 
-TODO: Write a gem description
+Requeue is a rediciulosly simple queue backed by redis.
 
 ## Installation
 
@@ -18,7 +18,57 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Usage is simple
+```ruby
+#create a new queue 
+q = Requeue::Queue.new
+
+#optionally you can specify your prefix or the redis object you want to use
+q = Requeue::Queue.new(redis:Redis.new,prefix:'awesome')
+
+#you can also tell the queue to only add unique items to it's self
+q = Requeue::Queue.new(unique:true)
+
+#All functions that change the state of the queue are suffixed with '!'
+#To enqueue a thing
+q.enqueue!('thing')
+
+#To dequeue the first item 
+q.dequeue!
+
+#To remove an item from the queue
+q.remove!('thing')
+
+#To clear the queue
+q.clear!
+
+#To steal the first place in the queue 
+q.steal!
+
+#To get the position of a value
+q.position('thing') => 0
+
+#To see if an item is queued
+q.queued?('thing') => true
+
+#To see the the current first item of the queue
+q.owner => 'thing'
+
+#To get the queue as a hash 
+q.as_hash
+
+#To get the queue as a json blob
+q.as_json
+
+#To get the internal name of the queue
+q.name
+
+#To get the length of the queue
+q.length
+
+#To get all of the items in the queue
+q.list
+```
 
 ## Contributing
 
