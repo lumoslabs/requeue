@@ -1,5 +1,6 @@
 # Requeue
 [![Code Climate](https://codeclimate.com/github/lumoslabs/requeue.png)](https://codeclimate.com/github/lumoslabs/requeue)
+[![Circle CI](https://circleci.com/gh/lumoslabs/requeue.png)](https://circleci.com/gh/lumoslabs/requeue)
 Requeue is a rediciulosly simple queue backed by redis.
 
 ## Installation
