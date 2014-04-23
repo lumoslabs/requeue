@@ -55,6 +55,7 @@ module Requeue
     def first
       @redis.lrange(name,0,1).first 
     end
+
     def owned?
       length > 0
     end
