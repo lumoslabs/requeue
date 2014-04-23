@@ -46,28 +46,36 @@ q.clear!
 q.steal!
 
 #To get the position of a value
-q.position('thing') => 0
+q.position('thing') 
+=> 0
 
 #To see if an item is queued
-q.queued?('thing') => true
+q.queued?('thing') 
+=> true
 
 #To see the the current first item of the queue
-q.owner => 'thing'
+q.owner 
+=> 'thing'
 
 #To get the queue as a hash 
 q.as_hash
+=> {:queue => ['1','2','3'] :owned => true :length => 3}
 
 #To get the queue as a json blob
 q.as_json
+=> '{"queue": [1,2,3], "owned" : true, "length": 3 }'
 
 #To get the internal name of the queue
 q.name
+=> 'awesome:queue'
 
 #To get the length of the queue
 q.length
+=> 3
 
 #To get all of the items in the queue
 q.list
+=> [1,2,3]
 ```
 
 ## Contributing
