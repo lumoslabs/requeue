@@ -46,6 +46,13 @@ describe Requeue::Queue do
        expect(@queue.enqueue!('eric')).to eq(2)
        expect(@queue.length).to eq(2)
      end
+
+     it 'should add non-unique values if the queue is set to non-unique' do
+       nonunique = Requeue::Queue.new(unique:false)
+       nonunique.enqueue!('eric')
+       nonunique.enqueue!('eric')
+       expect(nonunique.length).to eq(2)
+     end
    end
  end
 

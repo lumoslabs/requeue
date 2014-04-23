@@ -2,9 +2,10 @@ require 'redis'
 
 module Requeue
   class Queue
-    def initialize(redis: Redis.current, prefix: 'queue')
+    def initialize(redis: Redis.current, prefix: 'queue', unique:true)
       @prefix = prefix 
-      @redis = redis
+      @unique = unique 
+      @redis  = redis
     end
 
     def name
@@ -24,7 +25,7 @@ module Requeue
     end
     
     def enqueue!(value)
-      if (queued?(value) == false)
+      if (@unique == false || !queued?(value))
         @redis.rpush(name, value) 
       else
         length
@@ -48,9 +49,12 @@ module Requeue
     end
 
     def owner
-      @redis.lrange(name,0,1).first 
+      first
     end
 
+    def first
+      @redis.lrange(name,0,1).first 
+    end
     def owned?
       length > 0
     end
