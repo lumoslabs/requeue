@@ -45,7 +45,7 @@ module Requeue
     end
     
     def remove!(value)
-      @redis.lrem(name,0,value)
+      @redis.lrem(name, 0, value)
     end
 
     def owner
@@ -53,7 +53,7 @@ module Requeue
     end
 
     def first
-      @redis.lrange(name,0,1).first 
+      @redis.lrange(name, 0, 1).first 
     end
 
     def owned?
@@ -61,7 +61,7 @@ module Requeue
     end
 
     def steal!(value)
-      @redis.lpush(name,value)
+      @redis.lpush(name, value)
     end
     
     def as_json

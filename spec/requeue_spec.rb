@@ -9,27 +9,25 @@ describe Requeue::Queue do
    @queue.clear!
  end
 
- describe '.queue_name' do
+ describe '.name' do
   it { expect(@queue.name).to eq("test:queue") }
  end
 
- describe '.clear_queue!' do
+ describe '.clear!' do
    before { @queue.enqueue!('eric') }
-   before { @queue.clear! }
 
    it 'should empty the queue' do
-     expect(@redis.llen(@queue.name)).to eq(0)
+     expect{ @queue.clear! }.to change { @queue.length }.from(1).to(0)
    end
 
    it 'should see an empty queue' do
-      expect(@queue).not_to be_owned 
+     expect {@queue.clear! }.to change { @queue.owned? }.from(true).to(false)
    end
  end
 
  describe '.enqueue' do
    context 'when no users are enqueued' do
-     after { @queue.clear! }
-     it 'should return 1' do
+     it 'returns the number of users in the queue' do
        expect(@queue.enqueue!('eric')).to eq(1)
      end
    end
@@ -37,7 +35,6 @@ describe Requeue::Queue do
    context 'when some users are enqueued' do
      before { @queue.enqueue!('bob') }
      before { @queue.enqueue!('eric') }
-     after  { @queue.clear! }
      it 'should have a length of 2' do
        expect(@queue.length).to eq(2)
      end
@@ -50,8 +47,7 @@ describe Requeue::Queue do
      it 'should add non-unique values if the queue is set to non-unique' do
        nonunique = Requeue::Queue.new(unique:false)
        nonunique.enqueue!('eric')
-       nonunique.enqueue!('eric')
-       expect(nonunique.length).to eq(2)
+       expect{ nonunique.enqueue!('eric') }.to change { nonunique.length }.from(1).to(2)
      end
    end
  end
@@ -66,22 +62,25 @@ describe Requeue::Queue do
    context 'when some users are enqueued' do
      before { @queue.enqueue!('bob') }
      before { @queue.enqueue!('eric') }
-     after  { @queue.clear! }
+
      it 'should have the current users' do
        expect(@queue.list).to eq(['bob', 'eric'])
      end
    end
  end
+
  describe '.user_queued?' do
    before { @queue.enqueue!('bob') }
    before { @queue.enqueue!('eric') }
-   after  { @queue.clear! }
+
    it 'should show eric as queued' do
      expect(@queue.queued? 'eric').to eq(true)
    end
+
    it 'should show bob as queued' do
      expect(@queue.queued? 'bob').to eq(true)
    end
+  
    it 'should not show an unqueued user as queued' do
      expect(@queue.queued? 'jim').to eq(false)
    end
@@ -90,7 +89,7 @@ describe Requeue::Queue do
  describe '.user_position' do
    before { @queue.enqueue!('bob') }
    before { @queue.enqueue!('eric') }
-   after  { @queue.clear! }
+
    it 'eric should be in position 1 (the second place)' do
      expect(@queue.position 'eric').to eq(1)
      expect(@queue.position 'bob').to eq(0)
@@ -100,14 +99,14 @@ describe Requeue::Queue do
  describe '.dequeue' do
    before { @queue.enqueue!('bob') }
    before { @queue.enqueue!('eric') }
-   before { @queue.dequeue! }
+
    it 'eric should be in position 1 (the second place)' do
-     expect(@queue.position 'eric').to eq(0)
+     expect{ @queue.dequeue! }.to change {@queue.position 'eric'}.from(1).to(0)
    end
  end
 
  describe '.owner' do
-   context 'when no users are enqueued' do
+    context 'when no users are enqueued' do
       it 'should return empty string' do
         expect(@queue.owner).to eq(nil) 
       end
@@ -124,28 +123,26 @@ describe Requeue::Queue do
  describe '.remove!' do
    before { @queue.enqueue!('bob') }
    before { @queue.enqueue!('eric') }
-   before { @queue.remove!('eric') }
    
    it 'should not contain eric anymore' do
-     expect(@queue.queued?('eric')).to eq(false)
-     expect(@queue.list).to eq(['bob'])
+     expect { @queue.remove!('eric') }.to change {@queue.queued?('eric')}
+     expect { @queue.remove!('eric') }.to_not change {@queue.queued?('bob')}
    end
  end
 
  describe '.steal!' do
    before { @queue.enqueue!('bob') }
    before { @queue.enqueue!('eric') }
-   before { @queue.steal!('jim') }
 
    it 'jim should own the queue' do
-     expect(@queue.owner()).to eq('jim')
-     expect(@queue.list).to eq(['jim','bob','eric'])
+     expect { @queue.steal!('jim') }.to change { @queue.owner }.from('bob').to('jim')
    end
 
    it 'the queue should still have everyone else in it' do
-     expect(@queue.length).to eq(3)
+     expect { @queue.steal!('jim') }.to change { @queue.length }.from(2).to(3)
    end
  end
+
  describe '.owned?' do
     context 'when no users are enqueued' do
       it 'should start unowned' do
@@ -154,9 +151,8 @@ describe Requeue::Queue do
     end 
 
     context 'when a user is enqueued' do
-      before { @queue.enqueue!('eric') }
       it 'should be owned' do
-        expect(@queue).to be_owned 
+        expect { @queue.enqueue!('eric') }.to change { @queue.owned? }
       end
     end
   end
