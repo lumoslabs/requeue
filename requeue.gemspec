@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["efode@lumoslabs.com"]
   spec.summary       = %q{A simple resque based queue}
   spec.description   = %q{A a very simple resque based queue}
-  spec.homepage      = "github.com/lumoslabs/requeue"
+  spec.homepage      = "https://www.github.com/lumoslabs/requeue"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
