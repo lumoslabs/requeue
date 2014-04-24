@@ -20,11 +20,11 @@ module Requeue
       @redis.llen(name)
     end
    
-    def clear!
+    def clear
       @redis.del(name)
     end
     
-    def enqueue!(value)
+    def enqueue(value)
       if (@unique == false || !queued?(value))
         @redis.rpush(name, value) 
       else
@@ -32,7 +32,7 @@ module Requeue
       end
     end
 
-    def dequeue!
+    def dequeue
       @redis.lpop(name)
     end
 
@@ -44,7 +44,7 @@ module Requeue
       list.index(value)
     end
     
-    def remove!(value)
+    def remove(value)
       @redis.lrem(name, 0, value)
     end
 
@@ -60,7 +60,7 @@ module Requeue
       length > 0
     end
 
-    def steal!(value)
+    def steal(value)
       @redis.lpush(name, value)
     end
     
