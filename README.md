@@ -34,19 +34,19 @@ q = Requeue::Queue.new(unique:true)
 
 #All functions that change the state of the queue are suffixed with '!'
 #To enqueue a thing
-q.enqueue!('thing')
+q.enqueue('thing')
 
 #To dequeue the first item 
-q.dequeue!
+q.dequeue
 
 #To remove an item from the queue
-q.remove!('thing')
+q.remove('thing')
 
 #To clear the queue
-q.clear!
+q.clear
 
 #To steal the first place in the queue 
-q.steal!
+q.steal
 
 #To get the position of a value
 q.position('thing') 
