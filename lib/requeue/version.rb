@@ -1,3 +1,3 @@
 module Requeue
-  VERSION = "0.7.3"
+  VERSION = "0.9.0"
 end
